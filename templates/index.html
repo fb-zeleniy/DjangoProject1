@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for rub in rubrics %}
+
+<h1>Добро пожаловать в нашу компанию!</h1>
+<p>Мы предлагаем самый большой асортимент машин в Казахстане.</p>
+
+<p><a href="{{rub.get_absolute_url}}">
+    {{rub.name}}</a></p>
+{% endfor %}
+    <h1>Hello Django!</h1>
+
+{% for b in bbs %}
+<h2><a href="{{b.get_absolute_url}}">{{ b.title }}</a> - {{ b.price }}</h2>
+{% endfor %}
+
+
+</body>
+</html>
