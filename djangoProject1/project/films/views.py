@@ -81,25 +81,70 @@ def index(request):
 
 
 from .form import *
-def film_create(request,method="factory"):
-    FORM_MAP={
-        "factory": FilmFormFactory,
-        "quick": FilmForm,
-        "full": FilmFullForm
-    }
-    FormClass=FORM_MAP.get(method,FilmFormFactory)
-    if request.method=="POST":
-        form=FormClass(request.POST)
-        if form.is_valid():
-            film=form.save()
-            return HttpResponseRedirect(reverse("films:all"))
-    else:
-        form=FormClass()
-    return render(request,"films/add_film.html",{"form":form})
+from django.views import View
+from .form import FilmFormFactory, FilmFullForm, FilmForm
 
-def film_create_html(request, mode="quick"):
-    if request.method =="POST":
+# def film_create(request,method="factory"):
+#     FORM_MAP={
+#         "factory": FilmFormFactory,
+#         "quick": FilmForm,
+#         "full": FilmFullForm
+#     }
+#     FormClass=FORM_MAP.get(method,FilmFormFactory)
+#     if request.method=="POST":
+#         form=FormClass(request.POST)
+#         if form.is_valid():
+#             film=form.save()
+#             return HttpResponseRedirect(reverse("films:all"))
+#     else:
+#         form=FormClass()
+#     return render(request,"films/add_film.html",{"form":form})
+#
+# def film_create_html(request, mode="quick"):
+#     if request.method =="POST":
+#         form=FilmForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse("films:all"))
+#         else:
+#             form=FilmForm()
+#             template = "films/add_film.html" if mode=="quick" else "films/add_film_full.html"
+#             return render([request, template, {"form": form}])
+
+class Film_Create(View):
+    FORM_MAP = {
+            "factory": FilmFormFactory,
+            "quick": FilmForm,
+            "full": FilmFullForm
+        }
+def get_form_class(self, method):
+    return self.FORM_MAP.get(method, FilmFormFactory)
+
+
+def get(self,request, method='factory'):
+    FormClass = self.get_form_class(method)
+    form = FormClass()
+    return render(request, "films/add_film.html", {"form": form})
+
+def post(self,request, method='factory'):
+    FormClass = self.get_form_class(method)
+    form = FormClass(request.POST)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse("films:all"))
+    return render(request, "films/add_film.html", {"form": form})
+
+
+class Film_Create_html(View):
+
+
+    def get(self, request, mode="quick"):
         form=FilmForm(request.POST)
+        template = "films/add_film.html" if mode == "quick" else "films/add_film_full.html"
+        return render([request, template, {"form": form}])
+
+    def post(self, request, mode='quick'):
+        form = FilmForm(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("films:all"))
@@ -107,3 +152,25 @@ def film_create_html(request, mode="quick"):
             form=FilmForm()
             template = "films/add_film.html" if mode=="quick" else "films/add_film_full.html"
             return render([request, template, {"form": form}])
+
+#dz-21
+class FilmByReleaseDate(View):
+    model = Film
+    template_name = "films/film_list_by_release.html"
+    context_object_name = "films"
+
+    def get_queryset(self):
+         return Film.objects.order_by("year")
+
+class FilmListByCreatedAt(View):
+    model = Film
+    template_name = "films/film_list_by_created.html"
+    context_object_name = "films"
+
+    def get_queryset(self):
+        return Film.objects.order_by("created_at")
+
+#dz-22
+def film_list(request):
+    films = Film.objects.all()
+    return render(request, "films/film_list.html", {"films": films})

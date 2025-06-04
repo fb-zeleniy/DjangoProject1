@@ -13,8 +13,13 @@ urlpatterns = [
     # path('add/save/',add_saved_film,name='add_saved_film'),
     path('addfilm/',add_and_save_film,name='add_and_save_film'),
     path('index/',index,name='index'),
-    path('film-create/<str:method>/',film_create, name='film-create'),
-    path('film-create-html/<str:method>/', film_create_html)
+    # path('film-create/<str:method>/',film_create, name='film-create'),
+    # path('film-create-html/<str:method>/', film_create_html),
+    path("create/<str:method>/", Film_Create.as_view(), name="film_create"),
+    path("create_html/<str:mode>/", Film_Create_html.as_view(), name="film_create_html"),
+    path("by-release/", FilmByReleaseDate.as_view(), name="films_by_release"),
+    path("by-created/", FilmListByCreatedAt.as_view(), name="films_by_created"),
 ]
+
 
 
